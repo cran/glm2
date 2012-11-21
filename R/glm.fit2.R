@@ -1,4 +1,4 @@
-glm.fit2 <-
+glm.fit2 <- 
 function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
     control = list(), intercept = TRUE) 
@@ -6,9 +6,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     control <- do.call("glm.control", control)
     x <- as.matrix(x)
     xnames <- dimnames(x)[[2L]]
-    ynames <- if (is.matrix(y)) 
-        rownames(y)
-    else names(y)
+    ynames <- if (is.matrix(y)) rownames(y) else names(y)
     conv <- FALSE
     nobs <- NROW(y)
     nvars <- ncol(x)
@@ -25,9 +23,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     dev.resids <- family$dev.resids
     aic <- family$aic
     mu.eta <- family$mu.eta
-    unless.null <- function(x, if.null) if (is.null(x)) 
-        if.null
-    else x
+    unless.null <- function(x, if.null) if (is.null(x)) if.null else x
     valideta <- unless.null(family$valideta, function(eta) TRUE)
     validmu <- unless.null(family$validmu, function(mu) TRUE)
     if (is.null(mustart)) {
@@ -51,7 +47,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
         residuals <- (y - mu)/mu.eta(eta)
         good <- rep(TRUE, length(residuals))
         boundary <- conv <- TRUE
-        coef <- numeric(0L)
+        coef <- numeric()
         iter <- 0L
     }
     else {
@@ -65,9 +61,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                   domain = NA)
             else {
                 coefold <- start
-                offset + as.vector(if (NCOL(x) == 1) 
-                  x * start
-                else x %*% start)
+                offset + as.vector(if (NCOL(x) == 1L) x*start else x%*%start)
             }
         else family$linkfun(mustart)
         mu <- linkinv(eta)
@@ -96,12 +90,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             z <- (eta - offset)[good] + (y - mu)[good]/mu.eta.val[good]
             w <- sqrt((weights[good] * mu.eta.val[good]^2)/variance(mu)[good])
             ngoodobs <- as.integer(nobs - sum(!good))
-            fit <- .Fortran("dqrls", qr = x[good, ] * w, n = ngoodobs, 
-                p = nvars, y = w * z, ny = 1L, tol = min(1e-07, 
-                  control$epsilon/1000), coefficients = double(nvars), 
-                residuals = double(ngoodobs), effects = double(ngoodobs), 
-                rank = integer(1L), pivot = 1L:nvars, qraux = double(nvars), 
-                work = double(2 * nvars), PACKAGE = "base")
+            fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, tol=min(1e-07, control$epsilon/1000))
             if (any(!is.finite(fit$coefficients))) {
                 conv <- FALSE
                 warning(gettextf("non-finite coefficients at iteration %d", 
@@ -111,7 +100,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             if (nobs < fit$rank) 
                 stop(gettextf("X matrix has rank %d, but only %d observations", 
                   fit$rank, nobs), domain = NA)
-            start[fit$pivot] <- fit$coefficients
+            start[fit$qr$pivot] <- fit$coefficients
             eta <- drop(x %*% start)
             mu <- linkinv(eta <- eta + offset)
             dev <- sum(dev.resids(y, mu, weights))
@@ -205,20 +194,20 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
                   call. = FALSE)
         }
         if (fit$rank < nvars) 
-            coef[fit$pivot][seq.int(fit$rank + 1, nvars)] <- NA
-        xxnames <- xnames[fit$pivot]
+            coef[fit$qr$pivot][seq.int(fit$rank + 1, nvars)] <- NA
+        xxnames <- xnames[fit$qr$pivot]
         residuals <- (y - mu)/mu.eta(eta)
-        fit$qr <- as.matrix(fit$qr)
+        fit$qr$qr <- as.matrix(fit$qr$qr)
         nr <- min(sum(good), nvars)
         if (nr < nvars) {
             Rmat <- diag(nvars)
-            Rmat[1L:nr, 1L:nvars] <- fit$qr[1L:nr, 1L:nvars]
+            Rmat[1L:nr, 1L:nvars] <- fit$qr$qr[1L:nr, 1L:nvars]
         }
-        else Rmat <- fit$qr[1L:nvars, 1L:nvars]
+        else Rmat <- fit$qr$qr[1L:nvars, 1L:nvars]
         Rmat <- as.matrix(Rmat)
         Rmat[row(Rmat) > col(Rmat)] <- 0
         names(coef) <- xnames
-        colnames(fit$qr) <- xxnames
+        colnames(fit$qr$qr) <- xxnames
         dimnames(Rmat) <- list(xxnames, xxnames)
     }
     names(residuals) <- ynames
@@ -229,18 +218,12 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     names(wt) <- ynames
     names(weights) <- ynames
     names(y) <- ynames
-    if (!EMPTY) 
-        names(fit$effects) <- c(xxnames[seq_len(fit$rank)], rep.int("", 
-            sum(good) - fit$rank))
-    wtdmu <- if (intercept) 
-        sum(weights * y)/sum(weights)
-    else linkinv(offset)
+    if (!EMPTY) names(fit$effects) <- c(xxnames[seq_len(fit$rank)], rep.int("", sum(good) - fit$rank))
+    wtdmu <- if (intercept) sum(weights * y)/sum(weights) else linkinv(offset)
     nulldev <- sum(dev.resids(y, wtdmu, weights))
     n.ok <- nobs - sum(weights == 0)
     nulldf <- n.ok - as.integer(intercept)
-    rank <- if (EMPTY) 
-        0
-    else fit$rank
+    rank <- if (EMPTY) 0 else fit$rank
     resdf <- n.ok - rank
     aic.model <- aic(y, n, mu, weights, dev) + 2 * rank
     list(coefficients = coef, residuals = residuals, fitted.values = mu, 
@@ -252,4 +235,3 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
         df.residual = resdf, df.null = nulldf, y = y, converged = conv, 
         boundary = boundary)
 }
-

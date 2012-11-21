@@ -1,4 +1,4 @@
-glm2 <-
+glm2 <- 
 function (formula, family = gaussian, data, weights, subset, 
     na.action, start = NULL, etastart, mustart, offset, control = list(...), 
     model = TRUE, method = "glm.fit2", x = FALSE, y = TRUE, contrasts = NULL, 
@@ -58,10 +58,13 @@ function (formula, family = gaussian, data, weights, subset,
         control = control, intercept = attr(mt, "intercept") > 
             0L))
     if (length(offset) && attr(mt, "intercept") > 0L) {
-        fit$null.deviance <- eval(call(if (is.function(method)) "method" else method, 
+        fit2 <- eval(call(if (is.function(method)) "method" else method, 
             x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights, 
             offset = offset, family = family, control = control, 
-            intercept = TRUE))$deviance
+            intercept = TRUE))
+        if (!fit2$converged) 
+            warning("fitting to calculate the null deviance did not converge -- increase maxit?")
+        fit$null.deviance <- fit2$deviance
     }
     if (model) 
         fit$model <- mf
@@ -77,4 +80,3 @@ function (formula, family = gaussian, data, weights, subset,
     class(fit) <- c(fit$class, c("glm", "lm"))
     fit
 }
-

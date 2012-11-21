@@ -67,7 +67,7 @@ as for \code{\link{glm}}
 }
 }
 \details{
-\code{glm2} is a modified version of \code{glm} in the \bold{stats} package. It fits generalized linear models using the same model specification as \code{glm}. It is identical to \code{glm} except for minor modifications to change the default fitting method. The default method uses a stricter form of step-halving to force the deviance to decrease at each iteration and is implemented in \code{glm.fit2}. Like \code{glm}, user-supplied fitting functions can be used with \code{glm2} by passing a function or a character string naming a function to the \code{method} argument. 
+\code{glm2} is a modified version of \code{glm} in the \bold{stats} package. It fits generalized linear models using the same model specification as \code{glm}. It is identical to \code{glm} except for minor modifications to change the default fitting method. The default method uses a stricter form of step-halving to force the deviance to decrease at each iteration and is implemented in \code{glm.fit2}. Like \code{glm}, user-supplied fitting functions can be used with \code{glm2} by passing a function or a character string naming a function to the \code{method} argument. See Marschner (2011) for a discussion of the need for a modified fitting method. 
 }
 \value{
 The value returned by \code{glm2} has exactly the same documentation as the value returned by \code{glm}, except for:
@@ -78,6 +78,9 @@ the name of the fitter function used, which by default is \code{"glm.fit2"}.
 }
 \author{
 \code{glm2} uses the code from \code{glm}, whose authors are listed in the help documentation for the \bold{stats} package. Modifications to this code were made by Ian Marschner.
+}
+\references{
+Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. The R Journal, Vol. 3/2, pp.12-15.
 }
 \seealso{
 \code{\link{glm}}

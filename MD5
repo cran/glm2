@@ -1,0 +1,12 @@
+e3169372fd5faa6f9a30de42a7482795 *DESCRIPTION
+41fb0473ab6ddee806675c011bab2fb3 *NAMESPACE
+a925f3fb4b84e50c3ab3d3f66fbb4bf6 *R/glm.fit2.R
+7c8c5953d844c1cb39e9024c67e82652 *R/glm2-internal.R
+9da78308d88d4d6fdc22ca3bb5dc42ae *R/glm2.R
+e43ce4df8c02356cfbb269504ccac59e *data/crabs.rda
+038bf36ee1f0292208468aa3d400f694 *data/heart.rda
+c1ce03c78cebf3254b080a40bc181546 *man/crabs.Rd
+e393009401d14154f860d35de0259333 *man/glm.fit2.Rd
+595673526fdbeddf0dbb73cdef47f330 *man/glm2-package.Rd
+0917112d4182660e6128efc0d4a1340c *man/glm2.Rd
+bd0d1d1d01db0dd7c6b87b3ea9624ff0 *man/heart.Rd
