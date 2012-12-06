@@ -228,7 +228,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
     aic.model <- aic(y, n, mu, weights, dev) + 2 * rank
     list(coefficients = coef, residuals = residuals, fitted.values = mu, 
         effects = if (!EMPTY) fit$effects, R = if (!EMPTY) Rmat, 
-        rank = rank, qr = if (!EMPTY) structure(fit[c("qr", "rank", 
+        rank = rank, qr = if (!EMPTY) structure(fit$qr[c("qr", "rank", 
             "qraux", "pivot", "tol")], class = "qr"), family = family, 
         linear.predictors = eta, deviance = dev, aic = aic.model, 
         null.deviance = nulldev, iter = iter, weights = wt, prior.weights = weights, 

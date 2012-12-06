@@ -11,8 +11,8 @@ Fits generalized linear models using the same model specification as \code{glm} 
 \tabular{ll}{
 Package: \tab glm2\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2012-11-21\cr
+Version: \tab 1.1.1\cr
+Date: \tab 2012-12-06\cr
 License: \tab GPL (>=2)\cr
 LazyLoad: \tab yes\cr
 }
