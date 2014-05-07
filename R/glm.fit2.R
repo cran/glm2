@@ -90,7 +90,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             z <- (eta - offset)[good] + (y - mu)[good]/mu.eta.val[good]
             w <- sqrt((weights[good] * mu.eta.val[good]^2)/variance(mu)[good])
             ngoodobs <- as.integer(nobs - sum(!good))
-            fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, tol=min(1e-07, control$epsilon/1000))
+            fit <- lm.fit(x=x[good, , drop = FALSE]*w, y=z*w, singular.ok=FALSE, tol=min(1e-07, control$epsilon/1000))
             if (any(!is.finite(fit$coefficients))) {
                 conv <- FALSE
                 warning(gettextf("non-finite coefficients at iteration %d", 
@@ -178,7 +178,7 @@ function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL,
             }
         }
         if (!conv) 
-            warning("glm.fit2: algorithm did not converge", call. = FALSE)
+            warning("glm.fit2: algorithm did not converge. Try increasing the maximum iterations", call. = FALSE)
         if (boundary) 
             warning("glm.fit2: algorithm stopped at boundary value", 
                 call. = FALSE)
