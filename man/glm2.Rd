@@ -123,7 +123,7 @@ print.noquote(c(fit1$coef,fit2$coef))
 
 #=======================================================================
 # EXAMPLE 2: identity link Poisson (successful boundary convergence
-# using 4 identical approaches in glm and glm2 with the method argument) 
+# using identical approaches in glm and glm2) 
 #=======================================================================
 
 satellites <- crabs$Satellites
@@ -137,15 +137,9 @@ fit1 <- glm(satellites ~ width.shifted + factor(dark) + factor(goodspine),
 fit2 <- glm2(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
  family = poisson(link="identity"), start = rep(1,4))
 
-fit1.eq <- glm2(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
- family = poisson(link="identity"), start = rep(1,4), method = "glm.fit")
-
-fit2.eq <- glm(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
- family = poisson(link="identity"), start = rep(1,4), method = "glm.fit2")
-
-noquote(c("deviances: ",fit1$dev,fit2$dev,fit1.eq$dev,fit2.eq$dev))
-noquote(c("converged: ",fit1$conv,fit2$conv,fit1.eq$conv,fit2.eq$conv))
-noquote(c("boundary:  ",fit1$bound,fit2$bound,fit1.eq$bound,fit2.eq$bound))
+noquote(c("deviances: ",fit1$dev,fit2$dev))
+noquote(c("converged: ",fit1$conv,fit2$conv))
+noquote(c("boundary:  ",fit1$bound,fit2$bound))
 
 #===================================================================
 # EXAMPLE 3: identity link Poisson (periodic non-convergence in glm)
