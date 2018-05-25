@@ -10,7 +10,7 @@ Fits generalized linear models using the same model specification as \code{glm} 
 glm2(formula, family = gaussian, data, weights, subset, na.action, 
      start = NULL, etastart, mustart, offset, control = list(...), 
      model = TRUE, method = "glm.fit2", x = FALSE, y = TRUE, 
-     contrasts = NULL, ...)
+     singular.ok = TRUE, contrasts = NULL, ...)
 }
 \arguments{
   \item{formula}{
@@ -59,6 +59,9 @@ as for \code{\link{glm}}
   \item{y}{
 as for \code{\link{glm}}
 }
+  \item{singular.ok}{
+as for \code{\link{glm}}
+}
   \item{contrasts}{
 as for \code{\link{glm}}
 }
@@ -68,9 +71,6 @@ as for \code{\link{glm}}
 }
 \details{
 \code{glm2} is a modified version of \code{glm} in the \bold{stats} package. It fits generalized linear models using the same model specification as \code{glm}. It is identical to \code{glm} except for minor modifications to change the default fitting method. The default method uses a stricter form of step-halving to force the deviance to decrease at each iteration and is implemented in \code{glm.fit2}. Like \code{glm}, user-supplied fitting functions can be used with \code{glm2} by passing a function or a character string naming a function to the \code{method} argument. See Marschner (2011) for a discussion of the need for a modified fitting method. 
-}
-\note{
-If the model specified by \code{formula} is singular then \code{glm2} may terminate with a message that a singular fit has been encountered. In this case, a non-singular (full rank) model must be passed to \code{formula}.
 }
 \value{
 The value returned by \code{glm2} has exactly the same documentation as the value returned by \code{glm}, except for:
@@ -123,7 +123,7 @@ print.noquote(c(fit1$coef,fit2$coef))
 
 #=======================================================================
 # EXAMPLE 2: identity link Poisson (successful boundary convergence
-# using identical approaches in glm and glm2) 
+# using 4 identical approaches in glm and glm2 with the method argument) 
 #=======================================================================
 
 satellites <- crabs$Satellites
@@ -137,9 +137,15 @@ fit1 <- glm(satellites ~ width.shifted + factor(dark) + factor(goodspine),
 fit2 <- glm2(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
  family = poisson(link="identity"), start = rep(1,4))
 
-noquote(c("deviances: ",fit1$dev,fit2$dev))
-noquote(c("converged: ",fit1$conv,fit2$conv))
-noquote(c("boundary:  ",fit1$bound,fit2$bound))
+fit1.eq <- glm2(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
+ family = poisson(link="identity"), start = rep(1,4), method = "glm.fit")
+
+fit2.eq <- glm(satellites ~ width.shifted + factor(dark) + factor(goodspine), 
+ family = poisson(link="identity"), start = rep(1,4), method = "glm.fit2")
+
+noquote(c("deviances: ",fit1$dev,fit2$dev,fit1.eq$dev,fit2.eq$dev))
+noquote(c("converged: ",fit1$conv,fit2$conv,fit1.eq$conv,fit2.eq$conv))
+noquote(c("boundary:  ",fit1$bound,fit2$bound,fit1.eq$bound,fit2.eq$bound))
 
 #===================================================================
 # EXAMPLE 3: identity link Poisson (periodic non-convergence in glm)
